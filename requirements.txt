@@ -6,3 +6,5 @@ gunicorn==22.0.0
 cloudinary==1.41.0
 # Optional for PostgreSQL deployments:
 # psycopg2-binary==2.9.9
+psycopg[binary]
+gunicorn
