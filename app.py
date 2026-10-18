@@ -12,11 +12,21 @@ load_dotenv()  # lit le fichier .env (local)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-change-me")
-# Sur Render : DATABASE_URL est fournie automatiquement (PostgreSQL).
-# En local : on utilise les variables DB_* (même format que Laravel).
+
+# ---------- Base de données ----------
+# Sur Render : DATABASE_URL (PostgreSQL) doit être définie dans Environment.
+# En local : on utilise les variables DB_* du .env.
 db_url = os.getenv("DATABASE_URL")
-if not db_url:
-    driver = {"mysql": "mysql+pymysql", "pgsql": "postgresql"}.get(
+if db_url:
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+elif os.getenv("RENDER"):
+    raise RuntimeError(
+        "DATABASE_URL manquante : ajoute-la dans Render > Environment")
+else:
+    driver = {"mysql": "mysql+pymysql", "pgsql": "postgresql+psycopg"}.get(
         os.getenv("DB_CONNECTION", "mysql"), "mysql+pymysql")
     db_url = "{}://{}:{}@{}:{}/{}".format(
         driver,
@@ -27,8 +37,7 @@ if not db_url:
         os.getenv("DB_DATABASE", "boutique"))
     if driver.startswith("mysql"):
         db_url += "?charset=utf8mb4"
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
 app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
@@ -37,6 +46,7 @@ UPLOAD_DIR = os.path.join(app.root_path, "static", "uploads")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
 
+# ---------- Modèles ----------
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -76,6 +86,7 @@ DEFAULTS = {"shop_name": "Ma Boutique", "whatsapp": "", "phone": "",
             "address": "", "currency": "FCFA"}
 
 
+# ---------- Utilitaires ----------
 def get_settings():
     s = dict(DEFAULTS)
     s.update({x.key: x.value for x in Setting.query.all()})
@@ -172,15 +183,17 @@ def logout():
 @app.route("/admin")
 @admin_required
 def admin():
-    return render_template("admin.html", s=get_settings(),
-                           products=Product.query.order_by(Product.created.desc()).all())
+    return render_template(
+        "admin.html", s=get_settings(),
+        products=Product.query.order_by(Product.created.desc()).all())
 
 
 @app.route("/admin/product", methods=["POST"])
 @admin_required
 def add_product():
     f = request.form
-    p = Product(name=f["name"], price=int(f["price"] or 0), sizes=f.get("sizes", ""),
+    p = Product(name=f["name"], price=int(f["price"] or 0),
+                sizes=f.get("sizes", ""),
                 description=f.get("description", ""),
                 image_url=save_file(request.files.get("image"), "image"),
                 audio_url=save_file(request.files.get("audio"), "audio"))
@@ -226,8 +239,9 @@ def save_settings():
 @app.route("/admin/orders")
 @admin_required
 def orders():
-    return render_template("orders.html", s=get_settings(),
-                           orders=Order.query.order_by(Order.created.desc()).all())
+    return render_template(
+        "orders.html", s=get_settings(),
+        orders=Order.query.order_by(Order.created.desc()).all())
 
 
 @app.route("/admin/orders/<int:oid>/status", methods=["POST"])
