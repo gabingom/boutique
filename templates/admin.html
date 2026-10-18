@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block bodyclass %}adminbody{% endblock %}
+{% block body %}
+<header class="top"><span class="logo">Admin · {{ s.shop_name }}</span>
+  <span><a class="pill" href="{{ url_for('orders') }}">Commandes</a>
+  <a class="pill" href="{{ url_for('index') }}">Voir le site</a>
+  <a class="pill" href="{{ url_for('logout') }}">Sortir</a></span></header>
+
+<div class="panel">
+  <h3>Mes coordonnées</h3>
+  <form method="post" action="{{ url_for('save_settings') }}" class="grid2">
+    <label>Nom de la boutique<input name="shop_name" value="{{ s.shop_name }}"></label>
+    <label>WhatsApp (avec indicatif)<input name="whatsapp" value="{{ s.whatsapp }}" placeholder="221770000000"></label>
+    <label>Téléphone d'appel<input name="phone" value="{{ s.phone }}"></label>
+    <label>Devise<input name="currency" value="{{ s.currency }}"></label>
+    <label class="span">Adresse<input name="address" value="{{ s.address }}"></label>
+    <button class="btn span">Enregistrer</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h3>Ajouter un article</h3>
+  <form method="post" action="{{ url_for('add_product') }}" enctype="multipart/form-data" class="split adm">
+    <div class="photo pick"><label>📷 Choisir la photo<input type="file" name="image" accept="image/*" id="imgIn" required></label><img id="preview" alt=""></div>
+    <div class="card">
+      <input name="name" placeholder="Nom de l'article" required>
+      <input name="price" type="number" min="0" placeholder="Prix" required>
+      <input name="sizes" placeholder="Tailles séparées par des virgules (S, M, L ou 40, 41)">
+      <textarea name="description" rows="3" placeholder="Description (optionnel)"></textarea>
+      <div class="vocal"><span>🎙 Vocal (optionnel)</span>
+        <button type="button" id="recBtn" class="btn ghost">Enregistrer</button>
+        <input type="file" name="audio" accept="audio/*" id="audioIn">
+        <audio id="audioPrev" controls hidden></audio></div>
+      <button class="btn">Publier</button>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <h3>Mes articles ({{ products|length }})</h3>
+  {% for p in products %}
+  <div class="row">
+    {% if p.image_url %}<img class="thumb" src="{{ p.image_url }}" alt="">{% endif %}
+    <div class="grow"><b>{{ p.name }}</b><br>{{ p.price }} {{ s.currency }} · {{ p.sizes }}{% if not p.available %} · <i>masqué</i>{% endif %}</div>
+    <form method="post" action="{{ url_for('toggle_product', pid=p.id) }}"><button class="pill">{{ 'Masquer' if p.available else 'Afficher' }}</button></form>
+    <form method="post" action="{{ url_for('delete_product', pid=p.id) }}" onsubmit="return confirm('Supprimer ?')"><button class="pill danger">Supprimer</button></form>
+  </div>
+  {% endfor %}
+</div>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block bodyclass %}adminbody{% endblock %}
+{% block body %}
+<div class="panel narrow">
+  <h2>Espace vendeur</h2>
+  {% for m in get_flashed_messages() %}<p class="err">{{ m }}</p>{% endfor %}
+  <form method="post"><input type="password" name="password" placeholder="Mot de passe" required autofocus>
+  <button class="btn">Entrer</button></form>
+</div>
+{% endblock %}

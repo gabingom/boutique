@@ -1,0 +1,55 @@
+:root{--wine:#5a1230;--wine2:#3d0b21;--cream:#f6ecdc;--ink:#2a1018;--rose:#b3243f}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Jost',sans-serif;background:var(--wine2);color:var(--cream)}
+h1,h2,h3,.logo,.price{font-family:'Cormorant Garamond',serif;font-weight:600}
+.top{position:fixed;inset:0 0 auto 0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:rgba(61,11,33,.85);backdrop-filter:blur(8px)}
+.logo{font-size:1.4rem;font-style:italic}
+.pill,.btn{border:1px solid var(--cream);background:transparent;color:var(--cream);padding:8px 16px;border-radius:999px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.btn{background:var(--rose);border-color:var(--rose);padding:12px 22px}
+.btn.ghost{background:transparent;color:inherit;border-color:currentColor}
+.full{width:100%;text-align:center;margin-top:10px}
+.pill.danger{color:#c0334d;border-color:#c0334d}
+.scroller{height:100vh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+.feuillet{min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;padding:80px 18px 30px;text-align:center}
+.feuillet.intro{background:radial-gradient(circle at 50% 30%,var(--wine),var(--wine2));flex-direction:column}
+.feuillet.product:nth-child(odd){background:var(--wine)}
+.intro h1{font-size:3.2rem;margin:.2em 0}
+.kicker{letter-spacing:.25em;text-transform:uppercase;font-size:.7rem;opacity:.7;margin:0}
+.sub{opacity:.8;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.2rem}
+.contact{display:flex;gap:10px;margin-top:16px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:980px;align-items:center}
+.photo{aspect-ratio:3/4;background:#00000030;border-radius:6px;overflow:hidden;box-shadow:0 20px 40px #0006}
+.photo img{width:100%;height:100%;object-fit:cover}
+.card{background:var(--cream);color:var(--ink);padding:26px;border-radius:4px;text-align:left;box-shadow:0 20px 40px #0006;display:flex;flex-direction:column;gap:12px}
+.card h2{font-size:2.1rem;margin:0}
+.price{font-size:1.6rem;color:var(--rose);margin:0}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.size{border:1px solid var(--ink);background:none;border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.size.on{background:var(--ink);color:var(--cream)}
+.desc{margin:0;line-height:1.5}
+.vocal{display:flex;flex-direction:column;gap:6px;border:1px dashed #5a123066;padding:10px;border-radius:8px;font-size:.85rem}
+.vocal audio{width:100%}
+.drawer{position:fixed;top:0;right:-100%;width:min(420px,100%);height:100%;background:var(--cream);color:var(--ink);z-index:10;padding:20px;overflow:auto;transition:right .3s}
+.drawer.open{right:0}
+.drawer .pill{color:var(--ink);border-color:var(--ink)}
+.dhead{display:flex;justify-content:space-between;align-items:center}
+.x{background:none;border:0;font-size:1.3rem;cursor:pointer}
+.row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #0001}
+.grow{flex:1}
+input,textarea,select{width:100%;padding:12px;margin:5px 0;border:1px solid #5a123055;border-radius:6px;background:#fff;font:inherit}
+.note,small{opacity:.7;font-size:.8rem;display:block}
+.adminbody{background:var(--cream);color:var(--ink);padding-top:70px}
+.adminbody .top{background:var(--wine);color:var(--cream)}
+.adminbody .pill{color:var(--ink);border-color:var(--ink)}
+.adminbody .top .pill{color:var(--cream);border-color:var(--cream)}
+.panel{max-width:980px;margin:16px auto;padding:20px;background:#fff;border-radius:8px}
+.panel.narrow{max-width:360px;margin-top:20vh}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.span{grid-column:1/-1}
+.split.adm .photo{display:flex;align-items:center;justify-content:center;border:2px dashed #5a123066;box-shadow:none;position:relative}
+.pick label{cursor:pointer;padding:20px;text-align:center}.pick input{display:none}
+#preview{display:none;position:absolute;inset:0}
+.adminbody .card{box-shadow:none;background:#faf4ea}
+.thumb{width:56px;height:56px;object-fit:cover;border-radius:6px}
+#map{height:300px;border-radius:8px}
+.err{color:var(--rose)}
+@media(max-width:700px){.split,.grid2{grid-template-columns:1fr}.photo{aspect-ratio:4/3}.feuillet{padding-top:70px}}

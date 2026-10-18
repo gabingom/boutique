@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block bodyclass %}shop{% endblock %}
+{% block body %}
+<header class="top">
+  <span class="logo">{{ s.shop_name }}</span>
+  <button id="cartBtn" class="pill">Panier <b id="cartCount">0</b></button>
+</header>
+
+<main class="scroller">
+  <section class="feuillet intro">
+    <p class="kicker">bienvenue</p>
+    <h1>{{ s.shop_name }}</h1>
+    <p class="sub">Fais défiler pour découvrir la collection</p>
+    <div class="contact">
+      {% if s.whatsapp %}<a class="btn" href="https://wa.me/{{ s.whatsapp|replace('+','')|replace(' ','') }}">WhatsApp</a>{% endif %}
+      {% if s.phone %}<a class="btn ghost" href="tel:{{ s.phone }}">Appeler</a>{% endif %}
+    </div>
+    {% if s.address %}<p class="addr">{{ s.address }}</p>{% endif %}
+  </section>
+
+  {% for p in products %}
+  <section class="feuillet product" data-id="{{ p.id }}">
+    <div class="split">
+      <div class="photo">{% if p.image_url %}<img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy">{% endif %}</div>
+      <div class="card">
+        <p class="kicker">nouveauté</p>
+        <h2>{{ p.name }}</h2>
+        <p class="price">{{ p.price }} {{ s.currency }}</p>
+        {% if p.sizes %}
+        <div class="sizes">
+          {% for z in p.sizes.split(',') if z.strip() %}<button type="button" class="size" data-size="{{ z.strip() }}">{{ z.strip() }}</button>{% endfor %}
+        </div>{% endif %}
+        {% if p.description %}<p class="desc">{{ p.description }}</p>{% endif %}
+        {% if p.audio_url %}<div class="vocal"><span>🎙 description vocale</span><audio controls preload="none" src="{{ p.audio_url }}"></audio></div>{% endif %}
+        <button class="btn add" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-hassizes="{{ 1 if p.sizes else 0 }}">Ajouter au panier</button>
+      </div>
+    </div>
+  </section>
+  {% endfor %}
+  {% if not products %}<section class="feuillet"><p class="sub">Bientôt de nouveaux articles…</p></section>{% endif %}
+</main>
+
+<aside id="drawer" class="drawer">
+  <div class="dhead"><h3>Mon panier</h3><button id="closeCart" class="x">✕</button></div>
+  <div id="cartItems"></div>
+  <p class="total">Total : <b id="cartTotal">0</b> {{ s.currency }}</p>
+  <form id="checkout">
+    <input name="name" placeholder="Ton nom" required>
+    <input name="phone" placeholder="Ton téléphone" required>
+    <input name="address" placeholder="Adresse de livraison">
+    <button type="button" id="geoBtn" class="btn ghost">📍 Partager ma position</button>
+    <small id="geoMsg"></small>
+    <p class="note">Paiement à la livraison. Ta commande s'enverra sur WhatsApp.</p>
+    <button class="btn" type="submit">Commander</button>
+  </form>
+  {% if s.phone %}<a class="btn ghost full" href="tel:{{ s.phone }}">Ou appeler directement</a>{% endif %}
+</aside>
+
+<script>window.CURRENCY = {{ s.currency|tojson }};</script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

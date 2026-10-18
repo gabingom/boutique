@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block bodyclass %}adminbody{% endblock %}
+{% block body %}
+<header class="top"><span class="logo">Commandes</span>
+  <a class="pill" href="{{ url_for('admin') }}">← Admin</a></header>
+<div class="panel"><div id="map"></div></div>
+{% for o in orders %}
+<div class="panel order">
+  <div class="row"><b>#{{ o.id }} · {{ o.name }}</b><span class="grow"></span><span>{{ o.created.strftime('%d/%m %H:%M') }}</span></div>
+  <p>📞 <a href="tel:{{ o.phone }}">{{ o.phone }}</a> · {{ o.address }}</p>
+  <ul>{% for i in o.items_list %}<li>{{ i.name }} {{ i.size }} ×{{ i.qty }} — {{ i.price * i.qty }} {{ s.currency }}</li>{% endfor %}</ul>
+  <p><b>Total {{ o.total }} {{ s.currency }}</b> · {{ o.payment }}</p>
+  {% if o.lat %}<a class="btn ghost" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination={{ o.lat }},{{ o.lng }}">🧭 Itinéraire vers le client</a>{% endif %}
+  <form method="post" action="{{ url_for('order_status', oid=o.id) }}" class="row">
+    <select name="status">{% for st in ['Nouvelle','Confirmée','En livraison','Livrée','Annulée'] %}<option {{ 'selected' if o.status==st }}>{{ st }}</option>{% endfor %}</select>
+    <button class="pill">OK</button></form>
+</div>
+{% endfor %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const pts = [{% for o in orders if o.lat %}[{{ o.lat }},{{ o.lng }},{{ ('#%d %s'|format(o.id,o.name))|tojson }}],{% endfor %}];
+const map = L.map('map').setView(pts.length?[pts[0][0],pts[0][1]]:[14.69,-17.44], pts.length?12:6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+pts.forEach(p=>L.marker([p[0],p[1]]).addTo(map).bindPopup(p[2]));
+</script>
+{% endblock %}
